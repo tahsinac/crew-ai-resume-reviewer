@@ -37,11 +37,19 @@ def get_resume_analysis(resume_text, job_link):
         tools=[docs_tool, file_tool, scrape_tool]
     )
 
-    analyze = Task(
-        description=f'Analyze a resume for the job posted in the link {job_link}. The following is the resume: {resume_text}',
-        expected_output='A score for the resume for the given job description. Higher the match between the resume and the job description, the better the score. Also give a probability between 0 an 1 that this resume will pass ATS systems. Then give what key aspects are missing from the resume and advice on how the resume could be improved to be a good fit for the job. Use the entire job description you find in the link.',
-        agent=analyzer_agent
-    )
+    if job_link.startswith('https://'):
+        analyze = Task(
+            description=f'Analyze a resume for the job posted in the link {job_link}. The following is the resume: {resume_text}',
+            expected_output='A score for the resume for the given job description. Higher the match between the resume and the job description, the better the score. Also give a probability between 0 an 1 that this resume will pass ATS systems. Then give what key aspects are missing from the resume and advice on how the resume could be improved to be a good fit for the job. Use the entire job description you find in the link.',
+            agent=analyzer_agent
+        )
+    else:
+        analyze = Task(
+            description=f'Analyze a resume for the following job description: ##{job_link}##. The following is the resume: ##{resume_text}##',
+            expected_output='A score for the resume for the given job description. Higher the match between the resume and the job description, the better the score. Also give a probability between 0 an 1 that this resume will pass ATS systems. Then give what key aspects are missing from the resume and advice on how the resume could be improved to be a good fit for the job. Use the entire job description you find in the link.',
+            agent=analyzer_agent
+        )
+
 
     # Set up your crew with a sequential process (tasks executed sequentially by default)
     ats_crew = Crew(
@@ -57,7 +65,7 @@ def get_resume_analysis(resume_text, job_link):
     return crew_result
 
 st.title("ATS Analyzer")
-job_link=st.text_area("Paste job link below")
+job_link=st.text_area("Paste job link below or job description below")
 uploaded_file=st.file_uploader("Upload Your resume here",type="pdf",help="Upload your resume here in pdf format and press submit")
 
 submit = st.button("Submit")
