@@ -4,3 +4,4 @@ langchain-openai
 python-dotenv
 crewai[tools]
 pypdf2
+streamlit
