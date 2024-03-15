@@ -196,3 +196,4 @@ pip-selfcheck.json
 ### Others ###
 db/
 resume/
+.streamlit/
